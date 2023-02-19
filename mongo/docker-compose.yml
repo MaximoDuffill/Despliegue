@@ -1,0 +1,39 @@
+version: '2'
+services:
+  mi-mongo:
+    image: mongo:jammy
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=toor
+    volumes:
+      - Vol_mongoDB:/data/db
+    networks:
+      - Red_mongoDB
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=toor
+      - ME_CONFIG_MONGODB_SERVER=mi-mongo
+
+    networks:
+      - Red_mongoDB
+    ports:
+      - 8081:8081
+    depends_on:
+      - mi-mongo
+
+volumes:
+  Vol_mongoDB:
+    driver: local
+networks:
+  Red_mongoDB:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.0.0/16
